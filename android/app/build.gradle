@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.brandonglavin.manatag"
+    namespace "com.brand.manatag"
 
     // Dependencies require compiling against API 36+
     compileSdkVersion 36
 
     defaultConfig {
-        applicationId "com.brandonglavin.manatag"
+        applicationId "com.brand.manatag"
 
         minSdkVersion 24
 
