@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ManaTag</string>
+    <string name="title_activity_main">ManaTag</string>
+    <string name="package_name">com.brand.manatag</string>
+    <string name="custom_url_scheme">com.brand.manatag</string>
+</resources>

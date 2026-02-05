@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ManaTag</title>
+
+  <style>
+/* =========================================================
+   ManaTag theme refresh (appearance-only)
+   - Darker blue glow, higher contrast text
+   - Cards pop more
+   - Softer mobile button reactions
+   - Increase text sizes (NOT preview, NOT dropdown)
+   ========================================================= */
+
+:root{
+  color-scheme: dark;
+
+  /* Darker blue base + subtle glow */
+  --bg0:#070B16;
+  --bg1:#050813;
+
+  --surface: rgba(255,255,255,.07);
+  --surface2: rgba(255,255,255,.045);
+  --border: rgba(255,255,255,.12);
+
+  /* Higher contrast text */
+  --text:#F6F8FF;
+  --muted:#D7DDF2;
+
+  /* Blue accent (not neon) */
+  --accent:#2F6BFF;
+  --accentGlow: rgba(47,107,255,.22);
+
+  --shadow: 0 18px 55px rgba(0,0,0,.62);
+  --shadow2: 0 10px 28px rgba(0,0,0,.48);
+
+  --radius: 16px;
+  --radius2: 22px;
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  font-family: var(--sans);
+  color: var(--text);
+  background:
+    radial-gradient(900px 650px at 20% 10%, var(--accentGlow), transparent 62%),
+    radial-gradient(900px 650px at 80% 18%, rgba(255,255,255,.04), transparent 64%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+/* subtle texture layer */
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.02) 0px,
+      rgba(255,255,255,0.02) 1px,
+      rgba(0,0,0,0.00) 3px
+    );
+  opacity:.16;
+}
+
+/* vignette */
+body::after{
+  content:"";
+  position:fixed; inset:-20px;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 700px at 50% 20%, rgba(255,255,255,.04), transparent 55%),
+    radial-gradient(1100px 900px at 50% 120%, rgba(0,0,0,.55), rgba(0,0,0,.86));
+  opacity:.60;
+}
+
+.wrap{
+  position:relative; z-index:1;
+  max-width: 960px;
+  margin:0 auto;
+  padding: 18px 14px calc(20px + env(safe-area-inset-bottom));
+}
+
+/* Header updated for ManaTag title + H1 */
+header{
+  display:flex;
+  flex-direction: column;
+  align-items:flex-start;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.brand{
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(246,248,255,.95);
+  text-shadow: 0 0 18px rgba(47,107,255,.22);
+}
+
+h1{
+  margin:0;
+  font-size: 16px; /* bumped up */
+  letter-spacing: .02em;
+  font-family: var(--mono);
+  color: rgba(246,248,255,.92);
+  opacity: .98;
+}
+
+.card{
+  border-radius: var(--radius2);
+  background: linear-gradient(180deg, var(--surface), var(--surface2));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.62),
+    0 0 0 1px rgba(47,107,255,.08) inset;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+  margin-top: 12px;
+  animation: none;
+}
+
+.card::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(520px 220px at 18% 0%, rgba(47,107,255,.16), transparent 58%),
+    radial-gradient(520px 220px at 85% 10%, rgba(47,107,255,.10), transparent 62%);
+  opacity:.40;
+}
+
+.inner{ position:relative; padding: 14px; }
+
+/* Text size bumps (preview unchanged) */
+.section-title{
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 13px;               /* bumped */
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: .95;
+}
+
+label{
+  display:block;
+  font-family: var(--mono);
+  font-size: 13px;               /* bumped */
+  color: var(--muted);
+  margin-bottom: 6px;
+  letter-spacing: .04em;
+}
+
+/* IMPORTANT: dropdown/select unchanged per request.
+   We only bump text size for input + textarea (not select). */
+input[type="text"], select, textarea{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,14,28,.55);
+  color: var(--text);
+  box-shadow: var(--shadow2);
+  font-family: var(--mono);
+  font-size: 16px; /* keep baseline */
+}
+
+input[type="text"]{ font-size: 17px; }  /* bumped */
+textarea{ font-size: 17px; }            /* bumped */
+
+textarea{
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; }
+.row.tight{ gap:8px; }
+
+/* Buttons: soft mobile reaction, subtle glow */
+.btn{
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(47,107,255,.35);
+  background: linear-gradient(180deg, rgba(47,107,255,.18), rgba(47,107,255,.08));
+  color: var(--text);
+  font-family: var(--mono);
+  letter-spacing: .03em;
+  font-size: 13px; /* bumped */
+  cursor:pointer;
+  user-select:none;
+  min-height: 44px;
+  box-shadow: var(--shadow2);
+  flex: 1 1 auto;
+  transition: transform 110ms ease, filter 140ms ease, box-shadow 140ms ease, background 140ms ease, border-color 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.btn.secondary{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+}
+.btn:hover{ filter: brightness(1.05); }
+.btn:active{
+  transform: translateY(1px) scale(0.985);
+  filter: brightness(0.98);
+}
+.btn:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible{
+  outline: 3px solid rgba(47,107,255,.35);
+  outline-offset: 2px;
+  border-color: rgba(47,107,255,.38);
+}
+
+.small{
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  color: rgba(215,221,242,.92);
+  opacity: .95;
+}
+.fine{
+  font-family: var(--mono);
+  font-size: 12px; /* bumped */
+  color: rgba(215,221,242,.78);
+  opacity: .95;
+  margin-top: 8px;
+}
+
+/* Preview (UNCHANGED per request) */
+.preview{
+  border-radius: var(--radius2);
+  border: 1px dashed rgba(255,255,255,.16);
+  background: rgba(10,14,28,.40);
+  padding: 12px;
+  box-shadow: var(--shadow2);
+  font-size: 18px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--mono);
+}
+
+/* Safari-safe preview spans (keep this; it fixed the partial preview issue) */
+.preview span{
+  position: static !important;
+  display: inline !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  float: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Theme palette swatches */
+.theme-colors{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+.swatch{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,14,28,.40);
+  box-shadow: var(--shadow2);
+  flex: 1 1 auto;
+  min-width: 220px;
+}
+.mono{
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  letter-spacing: .06em;
+  color: var(--muted);
+  min-width: 28px;
+}
+input[type="color"]{
+  width: 44px;
+  height: 36px;
+  padding:0;
+  border:none;
+  background: transparent;
+  flex: 0 0 auto;
+}
+
+/* Segment editor */
+.segments{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.seg-row{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.seg{
+  flex: 1 1 0;
+  min-width: 150px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,14,28,.40);
+  box-shadow: var(--shadow2);
+  padding: 10px;
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.seg-top{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  color: var(--muted);
+}
+.seg-sample{
+  font-family: var(--mono);
+  font-size: 14px; /* kept */
+  border-radius: 12px;
+  border: 1px dashed rgba(255,255,255,.14);
+  background: rgba(0,0,0,.18);
+  padding: 8px 10px;
+  min-height: 36px;
+  display:flex;
+  align-items:center;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  word-break: break-word;
+}
+.boundary{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(10,14,28,.35);
+  box-shadow: var(--shadow2);
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  color: var(--muted);
+}
+.bbtn{
+  min-width: 56px;
+  flex: 0 0 auto;
+  padding: 12px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  min-height: 44px;
+  cursor: pointer;
+  transition: transform 110ms ease, filter 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.bbtn:active{ transform: scale(0.985); filter: brightness(0.98); }
+.bbtn:disabled{ opacity: .35; cursor: not-allowed; }
+
+/* Advanced per-letter editor */
+details{
+  border-radius: var(--radius2);
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,14,28,.35);
+  box-shadow: var(--shadow2);
+  overflow:hidden;
+}
+summary{
+  cursor:pointer;
+  list-style:none;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  letter-spacing:.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+summary::-webkit-details-marker{ display:none; }
+.advanced-inner{ padding: 14px; border-top: 1px solid rgba(255,255,255,.10); }
+
+.letters{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (min-width: 700px){
+  .letters{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 980px){
+  .letters{ grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+.letter{
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,14,28,.40);
+  box-shadow: var(--shadow2);
+  padding: 10px;
+  display:grid;
+  gap: 10px;
+  align-content: start;
+}
+.glyph{
+  height: 40px;
+  border-radius: 14px;
+  border: 1px dashed rgba(255,255,255,.16);
+  display:grid;
+  place-items:center;
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 700;
+  background: rgba(0,0,0,.18);
+}
+.controls{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.controls input[type="color"]{ width: 100%; height: 40px; }
+.controls input[type="text"]{ width: 100%; }
+
+/* Toast */
+.toast{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(10,14,28,.92);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px; /* bumped */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+  z-index: 9999;
+  box-shadow: var(--shadow2);
+}
+.toast.show{ opacity: 1; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="main">
+    <header>
+      <div class="brand">ManaTag</div>
+      <h1>Color code your deck names</h1>
+    </header>
+
+    <section class="card">
+      <div class="inner">
+        <div class="section-title">Deck and theme</div>
+
+        <div class="row">
+          <div style="flex:1 1 260px;">
+            <label for="deckName">Deck name</label>
+            <input id="deckName" type="text" value="Azorius Control" placeholder="Type your deck name" />
+            <div class="fine">Theme distribution applies to letters (spaces ignored).</div>
+          </div>
+
+          <div style="flex:1 1 220px;">
+            <label for="theme">Theme (WUBRG order)</label>
+            <select id="theme">
+              <!-- 1 color -->
+              <option value="W">W</option>
+              <option value="U">U</option>
+              <option value="B">B</option>
+              <option value="R">R</option>
+              <option value="G">G</option>
+
+              <!-- 2 colors (guild order) -->
+              <option value="WU">WU</option>
+              <option value="UB">UB</option>
+              <option value="BR">BR</option>
+              <option value="RG">RG</option>
+              <option value="GW">GW</option>
+              <option value="WB">WB</option>
+              <option value="UR">UR</option>
+              <option value="BG">BG</option>
+              <option value="RW">RW</option>
+              <option value="GU">GU</option>
+
+              <!-- 3 colors -->
+              <option value="WUB">WUB</option>
+              <option value="UBR">UBR</option>
+              <option value="BRG">BRG</option>
+              <option value="RGW">RGW</option>
+              <option value="GWU">GWU</option>
+              <option value="WBG">WBG</option>
+              <option value="URW">URW</option>
+              <option value="BGU">BGU</option>
+              <option value="RWB">RWB</option>
+              <option value="GUR">GUR</option>
+
+              <!-- 4 colors -->
+              <option value="WUBR">WUBR</option>
+              <option value="UBRG">UBRG</option>
+              <option value="BRGW">BRGW</option>
+              <option value="RGWU">RGWU</option>
+              <option value="GWUB">GWUB</option>
+
+              <!-- 5 colors -->
+              <option value="WUBRG">WUBRG</option>
+
+              <option value="MANUAL">Manual</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row tight" style="margin-top:10px;">
+          <button id="applyTheme" class="btn" type="button">Apply theme</button>
+          <button id="reverseOrder" class="btn secondary" type="button">Reverse</button>
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">Theme palette (editable)</div>
+        <div id="themeColors" class="theme-colors"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="inner">
+        <div class="section-title">Segment editor</div>
+        <div class="small">Adjust how many letters each theme color gets. Use arrows to move 1 letter across a boundary.</div>
+        <div id="segments" class="segments" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="inner">
+        <div class="section-title">Preview</div>
+        <div id="preview" class="preview"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="inner">
+        <div class="row" style="justify-content: space-between; align-items:center;">
+          <div class="section-title" style="margin:0;">Output to paste into Arena</div>
+          <button id="copy" class="btn" type="button" style="flex: 0 0 auto; min-width: 120px;">Copy</button>
+        </div>
+        <textarea id="output" readonly></textarea>
+        <div class="fine">Tags are emitted only when the color changes.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="inner">
+        <details id="advanced">
+          <summary>Advanced: per-letter editor</summary>
+          <div class="advanced-inner">
+            <div class="small" style="margin-bottom:10px;">This overrides segments. Use “Apply theme” to reset.</div>
+            <div id="letters" class="letters"></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="toast" class="toast">Copied</div>
+
+<script>
+(function () {
+  const elName = document.getElementById("deckName");
+  const elTheme = document.getElementById("theme");
+  const elApplyTheme = document.getElementById("applyTheme");
+  const elReverseOrder = document.getElementById("reverseOrder");
+
+  const elThemeColors = document.getElementById("themeColors");
+  const elSegments = document.getElementById("segments");
+
+  const elPreview = document.getElementById("preview");
+  const elOutput = document.getElementById("output");
+  const elCopy = document.getElementById("copy");
+  const elToast = document.getElementById("toast");
+
+  const elLetters = document.getElementById("letters");
+
+  const manaDefaults = {
+    W: "#F0E68C",
+    U: "#1E90FF",
+    B: "#4B0082",
+    R: "#FF4500",
+    G: "#32CD32"
+  };
+
+  const WUBRG_ORDER = ["W", "U", "B", "R", "G"];
+
+  let themeSymbols = ["W","U"];
+  let themeHexes = [manaDefaults.W, manaDefaults.U];
+  let colors = [];
+  let segmentCounts = [];
+
+  function normalizeHex(s) {
+    if (!s) return null;
+    s = String(s).trim().toUpperCase();
+    if (s.startsWith("<#") && s.endsWith(">")) s = s.slice(2, -1);
+    if (s.startsWith("#")) s = s.slice(1);
+    if (!/^[0-9A-F]{6}$/.test(s)) return null;
+    return "#" + s;
+  }
+
+  function showToast(msg) {
+    elToast.textContent = msg;
+    elToast.classList.add("show");
+    setTimeout(() => elToast.classList.remove("show"), 900);
+  }
+
+  function getThemeSymbolsFromValue(v) {
+    if (!v || v === "MANUAL") return [];
+
+    // Preserve the exact order in the dropdown value (e.g. "GW", "URW", "BRGW")
+    const out = [];
+    for (const ch of v) {
+      if ("WUBRG".includes(ch) && !out.includes(ch)) out.push(ch);
+    }
+    return out;
+  }
+
+  function setThemeFromSelect(resetOrder=true) {
+    // Preserve any user-edited colors per symbol (W/U/B/R/G)
+    const prevHexBySymbol = {};
+    themeSymbols.forEach((s, i) => { prevHexBySymbol[s] = themeHexes[i]; });
+
+    const v = elTheme.value;
+    const syms = getThemeSymbolsFromValue(v);
+    if (v === "MANUAL" || syms.length === 0) {
+      themeSymbols = [];
+      themeHexes = [];
+      return;
+    }
+
+    if (resetOrder) {
+      // Always WUBRG order for the selected combination
+      themeSymbols = syms.slice();
+    } else {
+      // Keep current order, but adjust symbols to match the newly selected combo
+      const keep = themeSymbols.filter(s => syms.includes(s));
+      const add = syms.filter(s => !keep.includes(s));
+      themeSymbols = keep.concat(add);
+    }
+
+    // Use preserved edits if available, otherwise defaults
+    themeHexes = themeSymbols.map(s => prevHexBySymbol[s] || manaDefaults[s] || "#FFFFFF");
+  }
+
+  function ensureColorsLength(n) {
+    if (colors.length < n) {
+      while (colors.length < n) colors.push("#FFFFFF");
+    } else if (colors.length > n) {
+      colors = colors.slice(0, n);
+    }
+  }
+
+  function getLetterIndices(chars) {
+    const idx = [];
+    for (let i = 0; i < chars.length; i++) {
+      if (chars[i] !== " ") idx.push(i);
+    }
+    return idx;
+  }
+
+  function initEqualSegments(letterCount, k) {
+    if (k <= 0) return [];
+    const base = Math.floor(letterCount / k);
+    const rem = letterCount % k;
+    const counts = new Array(k).fill(base);
+    for (let i = 0; i < rem; i++) counts[i] += 1;
+    return counts;
+  }
+
+  function applySegmentsToColors() {
+    const name = elName.value || "";
+    const chars = Array.from(name);
+    ensureColorsLength(chars.length);
+
+    const letterIdx = getLetterIndices(chars);
+    const nLetters = letterIdx.length;
+
+    if (themeHexes.length === 0 || nLetters === 0) return;
+
+    if (segmentCounts.length !== themeHexes.length || segmentCounts.reduce((a,b)=>a+b,0) !== nLetters) {
+      segmentCounts = initEqualSegments(nLetters, themeHexes.length);
+    }
+
+    let p = 0;
+    for (let j = 0; j < themeHexes.length; j++) {
+      const count = segmentCounts[j];
+      for (let t = 0; t < count; t++) {
+        const idx = letterIdx[p++];
+        colors[idx] = themeHexes[j];
+      }
+    }
+  }
+
+  function buildOutput() {
+    const name = elName.value || "";
+    const chars = Array.from(name);
+    ensureColorsLength(chars.length);
+
+    let out = "";
+    let currentColor = null;
+
+    for (let i = 0; i < chars.length; i++) {
+      const ch = chars[i];
+
+      if (ch === " ") {
+        out += ch;
+        continue;
+      }
+
+      const hex = normalizeHex(colors[i]) || "#FFFFFF";
+      if (hex !== currentColor) {
+        out += "<#" + hex.slice(1).toUpperCase() + ">";
+        currentColor = hex;
+      }
+      out += ch;
+    }
+    return out;
+  }
+
+  function buildPreview() {
+    const name = elName.value || "";
+    const chars = Array.from(name);
+    ensureColorsLength(chars.length);
+
+    elPreview.innerHTML = "";
+
+    for (let i = 0; i < chars.length; i++) {
+      const ch = chars[i];
+      const hex = normalizeHex(colors[i]) || "#FFFFFF";
+
+      if (ch === " ") {
+        elPreview.appendChild(document.createTextNode(" "));
+        continue;
+      }
+      const span = document.createElement("span");
+      span.textContent = ch;
+      span.style.setProperty("color", hex, "important");
+      elPreview.appendChild(span);
+    }
+  }
+
+  function renderThemePalette() {
+    elThemeColors.innerHTML = "";
+    if (themeSymbols.length === 0) {
+      const div = document.createElement("div");
+      div.className = "small";
+      div.textContent = "Manual: you can use the advanced editor or set per-letter colors.";
+      elThemeColors.appendChild(div);
+      return;
+    }
+
+    themeSymbols.forEach((sym, i) => {
+      const sw = document.createElement("div");
+      sw.className = "swatch";
+
+      const lab = document.createElement("span");
+      lab.className = "mono";
+      lab.textContent = sym;
+
+      const colorInput = document.createElement("input");
+      colorInput.type = "color";
+      colorInput.value = themeHexes[i];
+
+      const hexInput = document.createElement("input");
+      hexInput.type = "text";
+      hexInput.value = themeHexes[i];
+      hexInput.spellcheck = false;
+
+      colorInput.addEventListener("input", () => {
+        const v = colorInput.value.toUpperCase();
+        themeHexes[i] = v;
+        hexInput.value = v;
+      });
+
+      hexInput.addEventListener("input", () => {
+        const n = normalizeHex(hexInput.value);
+        if (!n) return;
+        themeHexes[i] = n;
+        colorInput.value = n;
+        hexInput.value = n;
+      });
+
+      sw.appendChild(lab);
+      sw.appendChild(colorInput);
+      sw.appendChild(hexInput);
+      elThemeColors.appendChild(sw);
+    });
+  }
+
+  function renderSegments() {
+    elSegments.innerHTML = "";
+
+    const name = elName.value || "";
+    const chars = Array.from(name);
+    const letterIdx = getLetterIndices(chars);
+    const nLetters = letterIdx.length;
+
+    if (themeHexes.length === 0) {
+      const div = document.createElement("div");
+      div.className = "small";
+      div.textContent = "Manual mode: segment editor is disabled.";
+      elSegments.appendChild(div);
+      return;
+    }
+    if (nLetters === 0) {
+      const div = document.createElement("div");
+      div.className = "small";
+      div.textContent = "Type a deck name to edit segments.";
+      elSegments.appendChild(div);
+      return;
+    }
+
+    if (segmentCounts.length !== themeHexes.length || segmentCounts.reduce((a,b)=>a+b,0) !== nLetters) {
+      segmentCounts = initEqualSegments(nLetters, themeHexes.length);
+    }
+
+    const segRow = document.createElement("div");
+    segRow.className = "seg-row";
+
+    const lettersOnly = letterIdx.map(idx => chars[idx]).join("");
+    let cursor = 0;
+
+    for (let i = 0; i < themeHexes.length; i++) {
+      const count = segmentCounts[i];
+      const sample = lettersOnly.slice(cursor, cursor + count);
+      cursor += count;
+
+      const seg = document.createElement("div");
+      seg.className = "seg";
+
+      const top = document.createElement("div");
+      top.className = "seg-top";
+
+      const left = document.createElement("div");
+      left.textContent = themeSymbols[i] + " · " + count;
+
+      const right = document.createElement("div");
+      right.textContent = themeHexes[i];
+
+      top.appendChild(left);
+      top.appendChild(right);
+
+      const sampleBox = document.createElement("div");
+      sampleBox.className = "seg-sample";
+      sampleBox.textContent = sample || "(none)";
+      sampleBox.style.color = themeHexes[i];
+
+      seg.appendChild(top);
+      seg.appendChild(sampleBox);
+      segRow.appendChild(seg);
+    }
+
+    elSegments.appendChild(segRow);
+
+    for (let i = 0; i < themeHexes.length - 1; i++) {
+      const b = document.createElement("div");
+      b.className = "boundary";
+
+      const label = document.createElement("div");
+      label.textContent = "Boundary: " + themeSymbols[i] + " | " + themeSymbols[i+1];
+
+      const btnLeft = document.createElement("button");
+      btnLeft.className = "bbtn";
+      btnLeft.type = "button";
+      btnLeft.textContent = "← +1";
+      btnLeft.disabled = segmentCounts[i+1] <= 0;
+
+      const btnRight = document.createElement("button");
+      btnRight.className = "bbtn";
+      btnRight.type = "button";
+      btnRight.textContent = "→ +1";
+      btnRight.disabled = segmentCounts[i] <= 0;
+
+      btnLeft.addEventListener("click", () => {
+        if (segmentCounts[i+1] <= 0) return;
+        segmentCounts[i] += 1;
+        segmentCounts[i+1] -= 1;
+        applySegmentsToColors();
+        renderAll(false);
+      });
+
+      btnRight.addEventListener("click", () => {
+        if (segmentCounts[i] <= 0) return;
+        segmentCounts[i] -= 1;
+        segmentCounts[i+1] += 1;
+        applySegmentsToColors();
+        renderAll(false);
+      });
+
+      b.appendChild(label);
+      b.appendChild(btnLeft);
+      b.appendChild(btnRight);
+      elSegments.appendChild(b);
+    }
+  }
+
+  function buildAdvancedLetters() {
+    const name = elName.value || "";
+    const chars = Array.from(name);
+    ensureColorsLength(chars.length);
+
+    elLetters.innerHTML = "";
+    chars.forEach((ch, i) => {
+      const tile = document.createElement("div");
+      tile.className = "letter";
+
+      const glyph = document.createElement("div");
+      glyph.className = "glyph";
+      glyph.textContent = ch === " " ? "␠" : ch;
+      glyph.style.color = colors[i];
+      tile.appendChild(glyph);
+
+      const controls = document.createElement("div");
+      controls.className = "controls";
+
+      const colorInput = document.createElement("input");
+      colorInput.type = "color";
+      colorInput.value = colors[i];
+
+      const hexInput = document.createElement("input");
+      hexInput.type = "text";
+      hexInput.value = colors[i];
+      hexInput.spellcheck = false;
+
+      colorInput.addEventListener("input", () => {
+        colors[i] = colorInput.value.toUpperCase();
+        hexInput.value = colors[i];
+        glyph.style.color = colors[i];
+        renderAll(false);
+      });
+
+      hexInput.addEventListener("input", () => {
+        const n = normalizeHex(hexInput.value);
+        if (!n) return;
+        colors[i] = n;
+        colorInput.value = n;
+        glyph.style.color = n;
+        renderAll(false);
+      });
+
+      controls.appendChild(colorInput);
+      controls.appendChild(hexInput);
+      tile.appendChild(controls);
+
+      elLetters.appendChild(tile);
+    });
+  }
+
+  function renderAll(rebuildAdvanced=true) {
+    const name = elName.value || "";
+    const chars = Array.from(name);
+
+    ensureColorsLength(chars.length);
+
+    buildPreview();
+    elOutput.value = buildOutput();
+
+    renderSegments();
+    if (rebuildAdvanced) buildAdvancedLetters();
+  }
+
+  function applyTheme(resetSegments=true, resetOrder=false) {
+    setThemeFromSelect(resetOrder);
+    renderThemePalette();;
+
+    const name = elName.value || "";
+    const chars = Array.from(name);
+    const nLetters = getLetterIndices(chars).length;
+
+    if (themeHexes.length > 0 && nLetters > 0) {
+      if (resetSegments) segmentCounts = initEqualSegments(nLetters, themeHexes.length);
+      applySegmentsToColors();
+    }
+    renderAll(true);
+  }
+
+  let debounceTimer = null;
+  elName.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => applyTheme(true, false), 120); // keep current order while typing
+  });
+
+  elTheme.addEventListener("change", () => applyTheme(true, true));     // reset to WUBRG when theme changes
+  elApplyTheme.addEventListener("click", () => applyTheme(true, true)); // reset to WUBRG when user taps Apply
+
+  elReverseOrder.addEventListener("click", () => {
+    if (themeSymbols.length < 2) return;
+    themeSymbols.reverse();
+    themeHexes.reverse();
+    applySegmentsToColors();
+    renderThemePalette();
+    renderAll(true);
+  });
+
+  elCopy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(elOutput.value);
+      showToast("Copied");
+    } catch {
+      elOutput.focus();
+      elOutput.select();
+      document.execCommand("copy");
+      showToast("Copied");
+    }
+  });
+
+  setThemeFromSelect(true);
+  renderThemePalette();
+  applyTheme(true);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+	"appId": "com.brand.manatag",
+	"appName": "ManaTag",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
